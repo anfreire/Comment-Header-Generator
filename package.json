@@ -1,0 +1,320 @@
+{
+  "name": "commentHeaderGenerator",
+  "displayName": "Comment Header Generator",
+  "publisher": "anfreire",
+  "version": "1.0.0",
+  "description": "Generate styled comment headers with custom formats",
+  "icon": "assets/icon.png",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "comment",
+    "header",
+    "banner",
+    "formatter",
+    "documentation"
+  ],
+  "activationEvents": [
+    "onCommand:commentHeaderGenerator.wrapComment"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anfreire/Comment-Header-Generator"
+  },
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "commentHeaderGenerator.wrapComment",
+        "title": "Wrap in Comment Block"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "commentHeaderGenerator.wrapComment",
+          "when": "editorTextFocus",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Comment Header Generator",
+      "properties": {
+        "commentHeaderGenerator.commentStyles": {
+          "type": "object",
+          "description": "Comment styles configuration",
+          "default": {
+            "*": {
+              "Single Line": {
+                "width": 80,
+                "lines": [
+                  [
+                    {
+                      "type": "segment",
+                      "text": "// "
+                    },
+                    {
+                      "type": "selection"
+                    },
+                    {
+                      "type": "segment",
+                      "text": " "
+                    },
+                    {
+                      "type": "filler",
+                      "text": "-"
+                    }
+                  ]
+                ]
+              },
+              "Multi Line": {
+                "width": 80,
+                "lines": [
+                  [
+                    {
+                      "type": "segment",
+                      "text": "/"
+                    },
+                    {
+                      "type": "filler",
+                      "text": "*"
+                    },
+                    {
+                      "type": "segment",
+                      "text": " "
+                    }
+                  ],
+                  [
+                    {
+                      "type": "segment",
+                      "text": " *"
+                    },
+                    {
+                      "type": "filler",
+                      "text": " "
+                    },
+                    {
+                      "type": "selection"
+                    },
+                    {
+                      "type": "filler",
+                      "text": " "
+                    },
+                    {
+                      "type": "segment",
+                      "text": "* "
+                    }
+                  ],
+                  [
+                    {
+                      "type": "segment",
+                      "text": " "
+                    },
+                    {
+                      "type": "filler",
+                      "text": "*"
+                    },
+                    {
+                      "type": "segment",
+                      "text": "/"
+                    }
+                  ]
+                ]
+              }
+            },
+            "#": {
+              "Single Line": {
+                "width": 80,
+                "lines": [
+                  [
+                    {
+                      "type": "segment",
+                      "text": "# "
+                    },
+                    {
+                      "type": "selection"
+                    },
+                    {
+                      "type": "segment",
+                      "text": " "
+                    },
+                    {
+                      "type": "filler",
+                      "text": "-"
+                    }
+                  ]
+                ]
+              },
+              "Multi Line": {
+                "width": 80,
+                "lines": [
+                  [
+                    {
+                      "type": "filler",
+                      "text": "#"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "segment",
+                      "text": "#"
+                    },
+                    {
+                      "type": "filler",
+                      "text": " "
+                    },
+                    {
+                      "type": "selection"
+                    },
+                    {
+                      "type": "filler",
+                      "text": " "
+                    },
+                    {
+                      "type": "segment",
+                      "text": "#"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "filler",
+                      "text": "#"
+                    }
+                  ]
+                ]
+              }
+            },
+            "-": {
+              "Single Line": {
+                "width": 80,
+                "lines": [
+                  [
+                    {
+                      "type": "segment",
+                      "text": "-- "
+                    },
+                    {
+                      "type": "selection"
+                    },
+                    {
+                      "type": "segment",
+                      "text": " "
+                    },
+                    {
+                      "type": "filler",
+                      "text": "-"
+                    }
+                  ]
+                ]
+              },
+              "Multi Line": {
+                "width": 80,
+                "lines": [
+                  [
+                    {
+                      "type": "filler",
+                      "text": "-"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "segment",
+                      "text": "-- "
+                    },
+                    {
+                      "type": "filler",
+                      "text": " "
+                    },
+                    {
+                      "type": "selection"
+                    },
+                    {
+                      "type": "filler",
+                      "text": " "
+                    },
+                    {
+                      "type": "segment",
+                      "text": "--"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "filler",
+                      "text": "-"
+                    }
+                  ]
+                ]
+              }
+            }
+          }
+        },
+        "commentHeaderGenerator.languageMapping": {
+          "type": "object",
+          "description": "Map language IDs to comment styles",
+          "markdownDescription": "Map language IDs to comment styles. Language IDs must match VSCode's [language identifiers](https://code.visualstudio.com/docs/languages/identifiers).\n\nYou can specify a single style (`\"javascript\": \"*\"`) or multiple styles (`\"php\": [\"*\", \"#\"]`) for each language.",
+          "default": {
+            "javascript": "*",
+            "typescript": "*",
+            "python": "#",
+            "json": "*",
+            "ruby": "#",
+            "bash": "#",
+            "shellscript": "#",
+            "php": [
+              "*",
+              "#"
+            ],
+            "java": "*",
+            "c": "*",
+            "cpp": "*",
+            "csharp": "*",
+            "go": "*",
+            "rust": "*",
+            "sql": "-",
+            "mysql": "-",
+            "plsql": "-",
+            "tsql": "-",
+            "pgsql": "-",
+            "sqlite": "-"
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "re": "rm -rf dist commentHeaderGenerator-*.vsix && npm run package && yes y | vsce package --baseContentUrl=https://github.com/anfreire/Comment-Header-Generator/raw/main --baseImagesUrl=https://github.com/anfreire/Comment-Header-Generator/raw/main"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.60.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.2",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "vsce": "^2.15.0"
+  }
+}
