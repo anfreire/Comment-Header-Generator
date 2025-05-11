@@ -13,7 +13,6 @@ A Visual Studio Code extension that helps you create beautifully formatted comme
 - Automatic indentation handling
 - Customizable comment styles via settings
 
-![TypeScript Demo](assets/demo_ts.gif)
 
 ![Python Demo](assets/demo_py.gif)
 
