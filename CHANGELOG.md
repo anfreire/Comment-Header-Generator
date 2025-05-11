@@ -14,3 +14,9 @@ All notable changes to the "Comment Header Generator" extension will be document
 - Configurable comment styles through settings
 - Support for multiple comment styles per language (e.g., PHP)
 - Custom keyboard shortcut (Ctrl+Shift+/ or Cmd+Shift+/)
+
+## [1.0.1] - 2025-06-11
+
+### Added
+- Defined JSON schema for `commentStyles` and `languageMapping`
+- Added support for `subtractIndentationWidth` with type hints
