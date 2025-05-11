@@ -50,6 +50,67 @@
         "commentHeaderGenerator.commentStyles": {
           "type": "object",
           "description": "Comment styles configuration",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "number",
+                  "description": "Total width of the comment line"
+                },
+                "subtractIndentationWidth": {
+                  "type": "boolean",
+                  "description": "Whether to subtract the line's indentation width from the comment width",
+                  "default": false
+                },
+                "lines": {
+                  "type": "array",
+                  "description": "List of lines, each as an array of segments",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "segment",
+                            "selection",
+                            "filler"
+                          ]
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "weight": {
+                          "type": "number"
+                        },
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "camel",
+                            "pascal",
+                            "snake",
+                            "kebab",
+                            "upper",
+                            "lower"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  }
+                }
+              },
+              "required": [
+                "width",
+                "lines"
+              ]
+            }
+          },
           "default": {
             "*": {
               "Single Line": {
@@ -259,6 +320,34 @@
           "type": "object",
           "description": "Map language IDs to comment styles",
           "markdownDescription": "Map language IDs to comment styles. Language IDs must match VSCode's [language identifiers](https://code.visualstudio.com/docs/languages/identifiers).\n\nYou can specify a single style (`\"javascript\": \"*\"`) or multiple styles (`\"php\": [\"*\", \"#\"]`) for each language.",
+          "patternProperties": {
+            "^[a-zA-Z0-9]+$": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "*",
+                    "#",
+                    "-"
+                  ],
+                  "description": "Single comment style"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "*",
+                      "#",
+                      "-"
+                    ]
+                  },
+                  "description": "Multiple comment styles"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
           "default": {
             "javascript": "*",
             "typescript": "*",
