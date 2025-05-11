@@ -2,7 +2,7 @@
   "name": "commentHeaderGenerator",
   "displayName": "Comment Header Generator",
   "publisher": "anfreire",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Generate styled comment headers with custom formats",
   "icon": "assets/icon.png",
   "license": "MIT",
@@ -325,22 +325,12 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "*",
-                    "#",
-                    "-"
-                  ],
                   "description": "Single comment style"
                 },
                 {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "enum": [
-                      "*",
-                      "#",
-                      "-"
-                    ]
+                    "type": "string"
                   },
                   "description": "Multiple comment styles"
                 }

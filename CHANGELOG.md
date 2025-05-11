@@ -5,6 +5,7 @@ All notable changes to the "Comment Header Generator" extension will be document
 ## [1.0.0] - 2025-05-11
 
 ### Added
+
 - Initial release of Comment Header Generator
 - Support for C-style (`*`), Shell/Python-style (`#`), and SQL-style (`-`) comments
 - Single-line and multi-line comment formats
@@ -14,8 +15,15 @@ All notable changes to the "Comment Header Generator" extension will be document
 - Configurable comment styles through settings
 - Support for multiple comment styles per language (e.g., PHP)
 
-## [1.0.2] - 2025-06-11
+## [1.0.2] - 2025-05-11
 
 ### Added
+
 - Defined JSON schema for `commentStyles` and `languageMapping`
 - Added support for `subtractIndentationWidth` with type hints
+
+## [1.0.3] - 2025-05-11
+
+### Fixed
+
+- Removed `enum` restriction on `commentHeaderGenerator.languageMapping` to allow custom comment style identifiers beyond the default `"*"`, `"#"` and `"-"`.
