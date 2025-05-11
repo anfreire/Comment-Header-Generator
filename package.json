@@ -2,7 +2,7 @@
   "name": "commentHeaderGenerator",
   "displayName": "Comment Header Generator",
   "publisher": "anfreire",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Generate styled comment headers with custom formats",
   "icon": "assets/icon.png",
   "license": "MIT",
@@ -387,6 +387,7 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
+    "publish": "vsce publish",
     "re": "rm -rf dist commentHeaderGenerator-*.vsix && npm run package && yes y | vsce package --baseContentUrl=https://github.com/anfreire/Comment-Header-Generator/raw/main --baseImagesUrl=https://github.com/anfreire/Comment-Header-Generator/raw/main"
   },
   "devDependencies": {
