@@ -9,7 +9,7 @@ A Visual Studio Code extension that helps you create beautifully formatted comme
 - Create single-line or multi-line comment headers with custom text
 - Automatically format comments based on the current language
 - Support for multiple comment styles (C-style, Shell/Python-style, SQL-style)
-- Text formatting options (camelCase, PascalCase, snake_case, etc.)
+- Text formatting options (camelCase, PascalCase, snake_case, kebab-case, capitalize, etc.)
 - Automatic indentation handling
 - Customizable comment styles via settings
 
@@ -28,7 +28,7 @@ A Visual Studio Code extension that helps you create beautifully formatted comme
 
 The extension automatically detects the appropriate comment style based on the language:
 
-- **C-style comments (`*`)**: JavaScript, TypeScript, Java, C, C++, C#, Go, Rust, JSON, etc.
+- **C-style comments (`/`)**: JavaScript, TypeScript, Java, C, C++, C#, Go, Rust, JSON, etc.
 - **Hash comments (`#`)**: Python, Ruby, Bash, Shell scripts, etc.
 - **Dash comments (`-`)**: SQL, MySQL, PLSQL, TSQL, etc.
 
@@ -70,15 +70,17 @@ PHP supports both C-style and hash comments.
 --------------------------------------------------------------------------------
 ```
 
-## Configuration
+## Customization
 
-You can customize the comment styles and language mappings in your VS Code settings:
+This extension is highly modular and customizable! The default configuration is just a starting point - you can completely customize how comments are generated.
 
 ### Comment Styles
 
+Define your own comment style patterns with different prefixes, fillers, and layouts:
+
 ```json
 "commentHeaderGenerator.commentStyles": {
-  "*": {
+  "/": {  // C-style comments
     "Single Line": {
       "width": 80,
       "lines": [
@@ -90,21 +92,90 @@ You can customize the comment styles and language mappings in your VS Code setti
         ]
       ]
     },
-    "Multi Line": { ... }
+    "Multi Line": {
+      "width": 80,
+      "lines": [
+        [
+          { "type": "segment", "text": "/" },
+          { "type": "filler", "text": "*" },
+          { "type": "segment", "text": " " }
+        ],
+        [
+          { "type": "segment", "text": " *" },
+          { "type": "filler", "text": " " },
+          { "type": "selection" },
+          { "type": "filler", "text": " " },
+          { "type": "segment", "text": "* " }
+        ],
+        [
+          { "type": "segment", "text": " " },
+          { "type": "filler", "text": "*" },
+          { "type": "segment", "text": "/" }
+        ]
+      ]
+    }
   },
-  "#": { ... },
-  "-": { ... }
+  "#": { /* Hash-style comment configuration */ },
+  "-": { /* SQL-style comment configuration */ },
+
+  // Add your own custom comment styles!
+  "custom": { /* Your custom comment style */ }
 }
 ```
 
 ### Language Mappings
 
+Map specific languages to comment styles:
+
 ```json
 "commentHeaderGenerator.languageMapping": {
-  "javascript": "*",
+  "javascript": "/",
   "python": "#",
   "sql": "-",
-  "php": ["*", "#"]
+  "php": ["/", "#"],
+
+  // Add your own language mappings!
+  "markdown": "custom"
+}
+```
+
+### Create Your Own Comment Styles
+
+You can create completely custom comment styles! For example, you could create a box-style comment:
+
+```json
+"commentHeaderGenerator.commentStyles": {
+  "box": {
+    "Box Style": {
+      "width": 80,
+      "lines": [
+        [
+          { "type": "segment", "text": "┌" },
+          { "type": "filler", "text": "─" },
+          { "type": "segment", "text": "┐" }
+        ],
+        [
+          { "type": "segment", "text": "│ " },
+          { "type": "selection" },
+          { "type": "filler", "text": " " },
+          { "type": "segment", "text": " │" }
+        ],
+        [
+          { "type": "segment", "text": "└" },
+          { "type": "filler", "text": "─" },
+          { "type": "segment", "text": "┘" }
+        ]
+      ]
+    }
+  }
+}
+```
+
+Then map a language to use it:
+
+```json
+"commentHeaderGenerator.languageMapping": {
+  "markdown": "box"
 }
 ```
 
@@ -128,6 +199,7 @@ When using a selection element, you can specify a format:
 - `kebab`: kebab-case-formatting
 - `upper`: UPPERCASE FORMATTING
 - `lower`: lowercase formatting
+- `capitalize`: Capitalize Each Word
 
 ### Multi-Character Fillers
 

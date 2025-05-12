@@ -14,6 +14,7 @@ interface Selection {
     | "kebab"
     | "upper"
     | "lower"
+    | "capitalize"
     | undefined;
 }
 
@@ -42,7 +43,7 @@ interface LanguageMapping {
 }
 
 const DEFAULT_COMMENT_STYLES: CommentStyles = {
-  "*": {
+  "/": {
     "Single Line": {
       width: 80,
       lines: [
@@ -247,20 +248,20 @@ const DEFAULT_COMMENT_STYLES: CommentStyles = {
 };
 
 const DEFAULT_LANGUAGE_MAPPING: LanguageMapping = {
-  javascript: "*",
-  typescript: "*",
+  javascript: "/",
+  typescript: "/",
   python: "#",
-  json: "*",
+  json: "/",
   ruby: "#",
   bash: "#",
   shellscript: "#",
-  php: ["*", "#"],
-  java: "*",
-  c: "*",
-  cpp: "*",
-  csharp: "*",
-  go: "*",
-  rust: "*",
+  php: ["/", "#"],
+  java: "/",
+  c: "/",
+  cpp: "/",
+  csharp: "/",
+  go: "/",
+  rust: "/",
   sql: "-",
   mysql: "-",
   plsql: "-",
@@ -367,6 +368,14 @@ function formatSelection(text: string, format?: string): string {
 
     case "lower":
       return text.toLowerCase();
+
+    case "capitalize":
+      return text
+        .split(" ")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ");
 
     default:
       return text;

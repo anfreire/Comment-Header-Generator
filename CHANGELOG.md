@@ -27,3 +27,15 @@ All notable changes to the "Comment Header Generator" extension will be document
 ### Fixed
 
 - Removed `enum` restriction on `commentHeaderGenerator.languageMapping` to allow custom comment style identifiers beyond the default `"*"`, `"#"` and `"-"`.
+
+## [1.0.4] - 2025-05-12
+
+### Added
+
+- Added "capitalize" formatting option for comment text (capitalizes the first letter of each word)
+- Improved README with comprehensive customization examples and clearer documentation
+
+### Changed
+
+- Changed default comment style identifier from "\*" to "/" to better reflect C-style comment syntax
+- Updated all language mappings to use the new "/" identifier instead of "\*"

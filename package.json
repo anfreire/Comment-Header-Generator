@@ -2,7 +2,7 @@
   "name": "commentHeaderGenerator",
   "displayName": "Comment Header Generator",
   "publisher": "anfreire",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Generate styled comment headers with custom formats",
   "icon": "assets/icon.png",
   "license": "MIT",
@@ -94,7 +94,8 @@
                             "snake",
                             "kebab",
                             "upper",
-                            "lower"
+                            "lower",
+                            "capitalize"
                           ]
                         }
                       },
@@ -339,23 +340,23 @@
           },
           "additionalProperties": false,
           "default": {
-            "javascript": "*",
-            "typescript": "*",
+            "javascript": "/",
+            "typescript": "/",
             "python": "#",
-            "json": "*",
+            "json": "/",
             "ruby": "#",
             "bash": "#",
             "shellscript": "#",
             "php": [
-              "*",
+              "/",
               "#"
             ],
-            "java": "*",
-            "c": "*",
-            "cpp": "*",
-            "csharp": "*",
-            "go": "*",
-            "rust": "*",
+            "java": "/",
+            "c": "/",
+            "cpp": "/",
+            "csharp": "/",
+            "go": "/",
+            "rust": "/",
             "sql": "-",
             "mysql": "-",
             "plsql": "-",
