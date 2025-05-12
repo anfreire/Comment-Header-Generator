@@ -2,7 +2,7 @@
 
 ![Comment Header Generator](assets/icon.png)
 
-A Visual Studio Code extension that helps you create beautifully formatted comment headers and dividers with a single command.
+A Visual Studio Code extension that helps you create beautifully formatted comment headers and dividers with a single command. It's fully customizable and supports any language or comment style you can imagine!
 
 ## Features
 
@@ -11,8 +11,7 @@ A Visual Studio Code extension that helps you create beautifully formatted comme
 - Support for multiple comment styles (C-style, Shell/Python-style, SQL-style)
 - Text formatting options (camelCase, PascalCase, snake_case, kebab-case, capitalize, etc.)
 - Automatic indentation handling
-- Customizable comment styles via settings
-
+- **Complete customization** - create your own comment styles from scratch!
 
 ![Python Demo](assets/demo_py.gif)
 
@@ -24,9 +23,9 @@ A Visual Studio Code extension that helps you create beautifully formatted comme
 4. If no text is selected, you'll be prompted to enter comment text
 5. Choose the comment style if multiple options are available
 
-## Supported Languages
+## Default Language Support
 
-The extension automatically detects the appropriate comment style based on the language:
+The extension comes with pre-configured comment styles for many languages, but **you can add support for any language** by customizing the settings:
 
 - **C-style comments (`/`)**: JavaScript, TypeScript, Java, C, C++, C#, Go, Rust, JSON, etc.
 - **Hash comments (`#`)**: Python, Ruby, Bash, Shell scripts, etc.
@@ -70,78 +69,191 @@ PHP supports both C-style and hash comments.
 --------------------------------------------------------------------------------
 ```
 
-## Customization
+## Customization Guide
 
-This extension is highly modular and customizable! The default configuration is just a starting point - you can completely customize how comments are generated.
+This extension is **completely modular and customizable**. You can:
 
-### Comment Styles
+- Create new comment styles from scratch
+- Modify or replace the default styles
+- Add support for new languages
+- Customize every aspect of the comment generation
 
-Define your own comment style patterns with different prefixes, fillers, and layouts:
+### How Configuration Works
+
+The extension uses two main configuration settings:
+
+1. `commentHeaderGenerator.commentStyles` - Defines the available comment styles
+2. `commentHeaderGenerator.languageMapping` - Maps languages to specific comment styles
+
+You can completely replace these settings with your own custom configurations.
+
+### Creating Custom Comment Styles
+
+You can use **any identifier** for your comment styles, not just the default ones. For example:
 
 ```json
 "commentHeaderGenerator.commentStyles": {
-  "/": {  // C-style comments
-    "Single Line": {
+  // You can modify or replace the default styles
+  "/": { /* C-style comments */ },
+  "#": { /* Hash comments */ },
+  "-": { /* SQL comments */ },
+
+  // Or create entirely new styles with any identifiers you want
+  "hearts": {
+    "Heart Border": {
       "width": 80,
       "lines": [
         [
-          { "type": "segment", "text": "// " },
-          { "type": "selection" },
-          { "type": "segment", "text": " " },
-          { "type": "filler", "text": "-" }
-        ]
-      ]
-    },
-    "Multi Line": {
-      "width": 80,
-      "lines": [
-        [
-          { "type": "segment", "text": "/" },
-          { "type": "filler", "text": "*" },
-          { "type": "segment", "text": " " }
+          { "type": "segment", "text": "/* " },
+          { "type": "filler", "text": "♥ " },
+          { "type": "segment", "text": "*/" }
         ],
         [
-          { "type": "segment", "text": " *" },
-          { "type": "filler", "text": " " },
+          { "type": "segment", "text": "/* " },
           { "type": "selection" },
-          { "type": "filler", "text": " " },
-          { "type": "segment", "text": "* " }
+          { "type": "segment", "text": " */" }
         ],
         [
-          { "type": "segment", "text": " " },
-          { "type": "filler", "text": "*" },
-          { "type": "segment", "text": "/" }
+          { "type": "segment", "text": "/* " },
+          { "type": "filler", "text": "♥ " },
+          { "type": "segment", "text": "*/" }
         ]
       ]
     }
   },
-  "#": { /* Hash-style comment configuration */ },
-  "-": { /* SQL-style comment configuration */ },
-
-  // Add your own custom comment styles!
-  "custom": { /* Your custom comment style */ }
+  "banner": {
+    "Banner Style": {
+      "width": 80,
+      "lines": [
+        [
+          { "type": "segment", "text": "/**" },
+          { "type": "filler", "text": "*" }
+        ],
+        [
+          { "type": "segment", "text": " * " },
+          { "type": "selection", "format": "capitalize" },
+          { "type": "filler", "text": " " }
+        ],
+        [
+          { "type": "filler", "text": "*" },
+          { "type": "segment", "text": "**/" }
+        ]
+      ]
+    }
+  }
 }
 ```
 
-### Language Mappings
+Then map languages to your custom styles:
 
-Map specific languages to comment styles:
+```diff
+"commentHeaderGenerator.languageMapping": {
+  // You can modify the default mappings
+- "javascript": "/",
++ "javascript": ["/", "hearts", "banner"],
+}
+```
 
 ```json
 "commentHeaderGenerator.languageMapping": {
-  "javascript": "/",
-  "python": "#",
-  "sql": "-",
-  "php": ["/", "#"],
-
-  // Add your own language mappings!
-  "markdown": "custom"
+  // Add mappings for any language to any style
+  "markdown": ["hearts", "banner"],
+  "html": "banner",
+  "css": "banner"
 }
 ```
 
-### Create Your Own Comment Styles
+### Detailed Configuration Options
 
-You can create completely custom comment styles! For example, you could create a box-style comment:
+#### Comment Style Definition
+
+Every comment style consists of:
+
+1. **Style Identifier** (e.g., "/", "#", "-", or any custom name)
+2. **Style Templates** (e.g., "Single Line", "Multi Line", or any custom name)
+3. **Template Configuration**:
+   - `width`: Total width of the comment (default: 80)
+   - `subtractIndentationWidth`: Whether to subtract indentation from width (default: false)
+   - `lines`: Array of line definitions, each containing content elements
+
+#### Content Elements
+
+There are three types of elements you can use in your comment styles:
+
+1. **Segment** - Static text like comment markers:
+
+   ```json
+   { "type": "segment", "text": "// " }
+   ```
+
+2. **Selection** - The text being wrapped (user's selected text or input):
+
+   ```json
+   { "type": "selection" }
+   ```
+
+   With optional formatting:
+
+   ```json
+   { "type": "selection", "format": "capitalize" }
+   ```
+
+   If no format is specified, the text remains unchanged. Available formats:
+
+   - `camel`: camelCaseFormatting
+   - `pascal`: PascalCaseFormatting
+   - `snake`: snake_case_formatting
+   - `kebab`: kebab-case-formatting
+   - `upper`: UPPERCASE FORMATTING
+   - `lower`: lowercase formatting
+   - `capitalize`: Capitalize Each Word
+
+3. **Filler** - Characters that fill remaining space:
+
+   ```json
+   { "type": "filler", "text": "-" }
+   ```
+
+   With optional weight for space distribution:
+
+   ```json
+   { "type": "filler", "text": "=", "weight": 2 }
+   ```
+
+#### Advanced Filler Options
+
+**Multi-Character Fillers**:
+
+```json
+{ "type": "filler", "text": "-*-" }
+```
+
+**Weighted Fillers** (for distributing space proportionally):
+
+```json
+[
+  { "type": "filler", "text": "=", "weight": 2 },
+  { "type": "filler", "text": "-", "weight": 1 }
+]
+```
+
+#### Indentation Handling
+
+To preserve document indentation and factor it into the comment width:
+
+```json
+{
+  "width": 80,
+  "subtractIndentationWidth": true,
+  "lines": [
+    /* ... */
+  ]
+}
+```
+
+### Example: Box Comment Style
+
+Here's a complete example of creating a box-style comment:
 
 ```json
 "commentHeaderGenerator.commentStyles": {
@@ -171,7 +283,7 @@ You can create completely custom comment styles! For example, you could create a
 }
 ```
 
-Then map a language to use it:
+And mapping it to a language:
 
 ```json
 "commentHeaderGenerator.languageMapping": {
@@ -179,58 +291,12 @@ Then map a language to use it:
 }
 ```
 
-## Advanced Configuration
+### Edge Cases
 
-### Comment Structure Elements
-
-The extension uses three types of content elements:
-
-- **segment**: Static text like comment markers (`//`, `#`, etc.)
-- **selection**: The text you want to wrap in a comment
-- **filler**: Characters that fill the remaining space (like dashes or asterisks)
-
-### Text Formatting Options
-
-When using a selection element, you can specify a format:
-
-- `camel`: camelCaseFormatting
-- `pascal`: PascalCaseFormatting
-- `snake`: snake_case_formatting
-- `kebab`: kebab-case-formatting
-- `upper`: UPPERCASE FORMATTING
-- `lower`: lowercase formatting
-- `capitalize`: Capitalize Each Word
-
-### Multi-Character Fillers
-
-You can use multi-character patterns as fillers:
-
-```json
-{ "type": "filler", "text": "-*-" }
-```
-
-### Weighted Fillers
-
-Control space distribution with weights:
-
-```json
-[
-  { "type": "filler", "text": "=", "weight": 2 },
-  { "type": "filler", "text": "-", "weight": 1 }
-]
-```
-
-### Indentation Handling
-
-Preserve indentation in the document:
-
-```json
-{
-  "width": 80,
-  "subtractIndentationWidth": true,
-  "lines": [ ... ]
-}
-```
+- **No text selected or entered**: The extension will create a comment with empty content.
+- **No format specified**: If no format is provided for a selection, the text is used as-is.
+- **Comment width too small**: If the width is insufficient, an error is shown.
+- **Unknown language**: If a language isn't in the mapping, the extension shows all available styles.
 
 ## License
 

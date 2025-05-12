@@ -33,9 +33,19 @@ All notable changes to the "Comment Header Generator" extension will be document
 ### Added
 
 - Added "capitalize" formatting option for comment text (capitalizes the first letter of each word)
-- Improved README with comprehensive customization examples and clearer documentation
 
 ### Changed
 
 - Changed default comment style identifier from "\*" to "/" to better reflect C-style comment syntax
 - Updated all language mappings to use the new "/" identifier instead of "\*"
+
+## [1.0.5] - 2025-05-12
+
+### Improved
+
+- Completely revamped README with comprehensive customization guide
+- Added detailed explanations for each configuration option
+- Added concrete examples of custom comment styles (hearts, banner, box)
+- Renamed "Supported Languages" section to "Default Language Support" to clarify customizability
+- Added "Edge Cases" section to documentation
+- Restructured documentation to emphasize the extension's fully modular nature
