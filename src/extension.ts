@@ -382,8 +382,88 @@ function formatSelection(text: string, format?: string): string {
   }
 }
 
+function renderLine(
+  line: Content[],
+  lineIdx: number,
+  linesWidth: number,
+  selection: string = "",
+  indentation: number = 0,
+  forceIndentation: boolean = false
+): string {
+  let totalWeight = 0;
+  let fixedWidth = 0;
+  let fillerCount = 0;
+  let finalContents: (string | Filler)[] = new Array(line.length);
+
+  line.forEach((content, contentIdx) => {
+    switch (content.type) {
+      case "segment":
+        fixedWidth += content.text.length;
+        finalContents[contentIdx] = content.text;
+        break;
+      case "selection":
+        const formattedText = formatSelection(selection, content.format);
+        fixedWidth += formattedText.length;
+        finalContents[contentIdx] = formattedText;
+        break;
+      case "filler":
+        totalWeight += content.weight || 1;
+        finalContents[contentIdx] = content;
+        fillerCount++;
+        break;
+    }
+  });
+
+  const missingWidth = linesWidth - fixedWidth;
+  if (missingWidth < 0) {
+    throw new Error("Comment width is too small");
+  }
+
+  if (fillerCount === 0 || missingWidth === 0) {
+    if (lineIdx === 0 && !forceIndentation) {
+      return finalContents.join("");
+    }
+
+    return " ".repeat(indentation) + finalContents.join("");
+  }
+
+  let availableFillersWidth = missingWidth;
+  let finalLine = "";
+  let visitedFillerCount = 0;
+  finalContents.forEach((finalContent) => {
+    if (typeof finalContent === "string") {
+      finalLine += finalContent;
+      return;
+    }
+
+    visitedFillerCount++;
+    const normalizedWeight = (finalContent.weight || 1) / totalWeight;
+    let fillerWidth = Math.floor(missingWidth * normalizedWeight);
+    availableFillersWidth -= fillerWidth;
+    if (visitedFillerCount === fillerCount) {
+      fillerWidth += availableFillersWidth;
+    }
+    const fillerText = finalContent.text;
+    if (fillerText.length > 1) {
+      const completeRepeats = Math.floor(fillerWidth / fillerText.length);
+      const remainder = fillerWidth % fillerText.length;
+      finalLine +=
+        fillerText.repeat(completeRepeats) + fillerText.substring(0, remainder);
+    } else {
+      finalLine += finalContent.text.repeat(fillerWidth);
+    }
+  });
+
+  if (lineIdx === 0 && !forceIndentation) {
+    return finalLine;
+  }
+
+  return " ".repeat(indentation) + finalLine;
+}
+
 function renderComment(
   template: CommentTemplate,
+  templateHasSelection: boolean,
   selection: string = "",
   indentation: number = 0
 ): string {
@@ -395,78 +475,27 @@ function renderComment(
     throw new Error("Comment width is too small");
   }
 
+  const selectionsLines = selection.split("\n").map((line) => line.trim());
   const resultLines: string[] = [];
   template.lines.forEach((line, lineIdx) => {
-    let totalWeight = 0;
-    let fixedWidth = 0;
-    let fillerCount = 0;
-    let finalContents: (string | Filler)[] = new Array(line.length);
-
-    line.forEach((content, contentIdx) => {
-      switch (content.type) {
-        case "segment":
-          fixedWidth += content.text.length;
-          finalContents[contentIdx] = content.text;
-          break;
-        case "selection":
-          const formattedText = formatSelection(selection, content.format);
-          fixedWidth += formattedText.length;
-          finalContents[contentIdx] = formattedText;
-          break;
-        case "filler":
-          totalWeight += content.weight || 1;
-          finalContents[contentIdx] = content;
-          fillerCount++;
-          break;
-      }
-    });
-
-    const missingWidth = linesWidth - fixedWidth;
-    if (missingWidth < 0) {
-      throw new Error("Comment width is too small");
-    }
-
-    if (fillerCount === 0 || missingWidth === 0) {
-      if (lineIdx === 0) {
-        resultLines.push(finalContents.join(""));
-      } else {
-        resultLines.push(" ".repeat(indentation) + finalContents.join(""));
-      }
-      return;
-    }
-
-    let availableFillersWidth = missingWidth;
-    let finalLine = "";
-    let visistedFillerCount = 0;
-    finalContents.forEach((finalContent) => {
-      if (typeof finalContent === "string") {
-        finalLine += finalContent;
-        return;
-      }
-
-      visistedFillerCount++;
-      const normalizedWeight = (finalContent.weight || 1) / totalWeight;
-      let fillerWidth = Math.floor(missingWidth * normalizedWeight);
-      availableFillersWidth -= fillerWidth;
-      if (visistedFillerCount === fillerCount) {
-        fillerWidth += availableFillersWidth;
-      }
-      const fillerText = finalContent.text;
-      if (fillerText.length > 1) {
-        const completeRepeats = Math.floor(fillerWidth / fillerText.length);
-        const remainder = fillerWidth % fillerText.length;
-        finalLine +=
-          fillerText.repeat(completeRepeats) +
-          fillerText.substring(0, remainder);
-      } else {
-        finalLine += finalContent.text.repeat(fillerWidth);
-      }
-    });
-
-    if (lineIdx === 0) {
-      resultLines.push(finalLine);
+    if (
+      templateHasSelection &&
+      line.some((content) => content.type === "selection")
+    ) {
+      selectionsLines.forEach((lineSelection, lineSelectionIdx) => {
+        resultLines.push(
+          renderLine(
+            line,
+            lineIdx,
+            linesWidth,
+            lineSelection,
+            indentation,
+            !!lineSelectionIdx
+          )
+        );
+      });
     } else {
-      resultLines.push(" ".repeat(indentation) + finalLine);
+      resultLines.push(renderLine(line, lineIdx, linesWidth, "", indentation));
     }
   });
 
@@ -552,19 +581,39 @@ export class CommentHeaderGenerator {
         throw new Error(`No template found for style "${styleName}"`);
       }
 
-      if (!selectedText) {
-        selectedText = await vscode.window.showInputBox({
-          placeHolder:
-            "Enter comment text (or leave empty for a blank comment)",
-          prompt: "No text is selected. Enter the text for your comment.",
-        });
+      if (!template.lines || template.lines.length === 0) {
+        throw new Error("Template must have at least one line");
+      }
+      if (indentation < 0) {
+        throw new Error("Indentation cannot be negative");
+      }
 
-        if (selectedText === undefined) {
-          return; // User cancelled
+      const templateHasSelection = template.lines.some((line) =>
+        line.some((content) => content.type === "selection")
+      );
+
+      if (!selectedText) {
+        if (templateHasSelection) {
+          selectedText = await vscode.window.showInputBox({
+            placeHolder:
+              "Enter comment text (or leave empty for a blank comment)",
+            prompt: "No text is selected. Enter the text for your comment.",
+          });
+
+          if (selectedText === undefined) {
+            return; // User cancelled
+          }
+        } else {
+          selectedText = "";
         }
       }
 
-      const commentBlock = renderComment(template, selectedText, indentation);
+      const commentBlock = renderComment(
+        template,
+        templateHasSelection,
+        selectedText,
+        indentation
+      );
 
       if (!editor.selection.isEmpty) {
         await this.replaceSelection(editor, commentBlock);

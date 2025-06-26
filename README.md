@@ -11,6 +11,7 @@ A Visual Studio Code extension that helps you create beautifully formatted comme
 - Support for multiple comment styles (C-style, Shell/Python-style, SQL-style)
 - Text formatting options (camelCase, PascalCase, snake_case, kebab-case, capitalize, etc.)
 - Automatic indentation handling
+- Automatic multi-line selection support
 - **Complete customization** - create your own comment styles from scratch!
 
 ![Python Demo](assets/demo_py.gif)

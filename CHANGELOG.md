@@ -49,3 +49,9 @@ All notable changes to the "Comment Header Generator" extension will be document
 - Renamed "Supported Languages" section to "Default Language Support" to clarify customizability
 - Added "Edge Cases" section to documentation
 - Restructured documentation to emphasize the extension's fully modular nature
+
+## [1.0.6] - 2025-06-26
+
+### Added
+
+- Multi-line selection support - each selected line now gets its own comment formatting

@@ -2,7 +2,7 @@
   "name": "commentHeaderGenerator",
   "displayName": "Comment Header Generator",
   "publisher": "anfreire",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Generate styled comment headers with custom formats",
   "icon": "assets/icon.png",
   "license": "MIT",
