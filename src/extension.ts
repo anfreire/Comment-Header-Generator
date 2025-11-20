@@ -320,6 +320,39 @@ function getStyleKeys(
   return styleKeys;
 }
 
+function getDisplayWidth(text: string): number {
+  let width = 0;
+  
+  for (const char of text) {
+    const code = char.codePointAt(0);
+    if (code === undefined) {
+      continue;
+    }
+    
+    if (
+      (code >= 0x1F300 && code <= 0x1F9FF) || // Emoji & Pictographs
+      (code >= 0x1F600 && code <= 0x1F64F) || // Emoticons
+      (code >= 0x1F680 && code <= 0x1F6FF) || // Transport & Map
+      (code >= 0x2600 && code <= 0x26FF) ||   // Miscellaneous Symbols
+      (code >= 0x2700 && code <= 0x27BF) ||   // Dingbats
+      (code >= 0xFE00 && code <= 0xFE0F) ||   // Variation Selectors
+      (code >= 0x1F900 && code <= 0x1F9FF) || // Supplemental Symbols
+      (code >= 0x1FA70 && code <= 0x1FAFF) || // Symbols and Pictographs Extended-A
+      (code >= 0x4E00 && code <= 0x9FFF) ||   // CJK Unified Ideographs
+      (code >= 0x3400 && code <= 0x4DBF) ||   // CJK Extension A
+      (code >= 0xAC00 && code <= 0xD7AF) ||   // Hangul Syllables
+      (code >= 0xFF00 && code <= 0xFFEF) ||   // Full-width characters
+      (code >= 0x20000 && code <= 0x2FFFF)    // CJK Extension B and beyond
+    ) {
+      width += 2;
+    } else {
+      width += 1;
+    }
+  }
+  
+  return width;
+}
+
 function formatSelection(text: string, format?: string): string {
   if (!format || !text) {
     return text;
@@ -398,12 +431,12 @@ function renderLine(
   line.forEach((content, contentIdx) => {
     switch (content.type) {
       case "segment":
-        fixedWidth += content.text.length;
+        fixedWidth += getDisplayWidth(content.text);
         finalContents[contentIdx] = content.text;
         break;
       case "selection":
         const formattedText = formatSelection(selection, content.format);
-        fixedWidth += formattedText.length;
+        fixedWidth += getDisplayWidth(formattedText);
         finalContents[contentIdx] = formattedText;
         break;
       case "filler":
@@ -444,11 +477,24 @@ function renderLine(
       fillerWidth += availableFillersWidth;
     }
     const fillerText = finalContent.text;
-    if (fillerText.length > 1) {
-      const completeRepeats = Math.floor(fillerWidth / fillerText.length);
-      const remainder = fillerWidth % fillerText.length;
-      finalLine +=
-        fillerText.repeat(completeRepeats) + fillerText.substring(0, remainder);
+    const fillerDisplayWidth = getDisplayWidth(fillerText);
+    if (fillerDisplayWidth > 1) {
+      const completeRepeats = Math.floor(fillerWidth / fillerDisplayWidth);
+      const remainder = fillerWidth % fillerDisplayWidth;
+      let fillerResult = fillerText.repeat(completeRepeats);
+      if (remainder > 0) {
+        let currentWidth = 0;
+        for (const char of fillerText) {
+          const charWidth = getDisplayWidth(char);
+          if (currentWidth + charWidth <= remainder) {
+            fillerResult += char;
+            currentWidth += charWidth;
+          } else {
+            break;
+          }
+        }
+      }
+      finalLine += fillerResult;
     } else {
       finalLine += finalContent.text.repeat(fillerWidth);
     }

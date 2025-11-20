@@ -55,3 +55,11 @@ All notable changes to the "Comment Header Generator" extension will be document
 ### Added
 
 - Multi-line selection support - each selected line now gets its own comment formatting
+
+## [1.0.7] - 2025-11-20
+
+### Fixed
+
+- Fixed incorrect line width calculation when using wide Unicode characters (emojis, CJK characters, etc.)
+- Wide characters like 💾 now correctly occupy 2 display columns instead of being counted as 1
+- Filler text now properly handles wide characters to prevent lines from extending beyond the configured width
